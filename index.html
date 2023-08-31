@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>ERKI!</title>
+    <style>
+        body {
+            background: black;
+            font-family: 'Times New Roman', 'sans-serif';
+        }
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+        }
+        .container {
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            margin-top: 8rem;
+            width: 100%;
+        }
+        .bg {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 5%;
+            padding: 1rem;
+        }
+        .hidden {
+            display: none;
+        }
+        .block {
+            max-width: 500px;
+        }
+        .result {
+            font-size: 2rem;
+            font-weight: bold;
+            line-height: 1.3;
+            color: red;
+            text-align: center;
+        }
+        form, form input, form input::placeholder {
+            color: red;
+        }
+        form {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            transform: scale(2.0);
+        }
+        form input {
+            background: black;
+            margin: 0 1rem 1rem 1rem;
+            text-transform: uppercase;
+        }
+        input::placeholder {
+            text-align: center;
+        }
+        .glow {
+            box-shadow: rgba(255,162,0,1) 0px 0px 75px;
+        }
+        .text-white {
+            color: white;
+        }
+    </style>
+    <script>
+        function initBackground() {
+            const c = document.getElementById("c");
+            const ctx = c.getContext("2d");
+
+            //making the canvas full screen
+            c.height = window.innerHeight;
+            c.width = window.innerWidth;
+
+            //chinese characters - taken from the unicode charset
+            const matrix = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}'.split('');
+
+            const font_size = 10;
+            const columns = c.width/font_size; //number of columns for the rain
+            //an array of drops - one per column
+            const drops = [];
+            //x below is the x coordinate
+            //1 = y co-ordinate of the drop(same for every drop initially)
+            for(var x = 0; x < columns; x++)
+                drops[x] = 1; 
+
+            //drawing the characters
+            function draw()
+            {
+                //Black BG for the canvas
+                //translucent BG to show trail
+                ctx.fillStyle = "rgba(0, 0, 0, 0.04)";
+                ctx.fillRect(0, 0, c.width, c.height);
+
+                ctx.fillStyle = "#f4427d";//green text
+                ctx.font = font_size + "px arial";
+                //looping over drops
+                for(var i = 0; i < drops.length; i++)
+                {
+                    //a random chinese character to print
+                    var text = matrix[Math.floor(Math.random()*matrix.length)];
+                    //x = i*font_size, y = value of drops[i]*font_size
+                    ctx.fillText(text, i*font_size, drops[i]*font_size);
+
+                    //sending the drop back to the top randomly after it has crossed the screen
+                    //adding a randomness to the reset to make the drops scattered on the Y axis
+                    if(drops[i]*font_size > c.height && Math.random() > 0.975)
+                        drops[i] = 0;
+
+                    //incrementing Y coordinate
+                    drops[i]++;
+                }
+            }
+
+            setInterval(draw, 35);
+        }
+    </script>
+</head>
+<body>
+    <canvas id="c"></canvas>
+    <div id="form-container" class="container">
+        <form id="form" class="block">
+            <input class="glow" type="password" name="password" placeholder="Sisesta parool" />
+            <input class="glow" type="submit" value="Jätka" />
+        </form>
+    </div>
+    <div id="result-container" class="container hidden">
+        <section id="result" class="block result">
+            <p>Ole kohal</p>
+            <p class="text-white">
+                <a href="https://www.google.com/maps/place/J%C3%A4rve+kergliikustee+parkla/@59.3939916,24.7240769,730m/data=!3m1!1e3!4m10!1m2!2m1!1sj%C3%A4rve+kergliiklustee+parkla!3m6!1s0x469295a9cd41d619:0x7f122b4f883994b!8m2!3d59.3927562!4d24.7268823!15sChxqw6RydmUga2VyZ2xpaWtsdXN0ZWUgcGFya2xhkgELaGlraW5nX2FyZWHgAQA!16s%2Fg%2F11fvydbtys?entry=ttu" target="_blank" rel="noreferer noorigin">Järve terviserada</a><br>
+                Kell 09:00 <br>
+            </p>
+            <h3>Kaasa:</h3>
+            <p class="text-white">
+                Jooksutossud<br>
+                Rätik<br>
+                Pikad dressid<br>
+            </p>
+        </section>
+    </div>
+    <script>
+        window.second = 'lo'
+        function onFormSubmit(evt) {
+            evt.preventDefault();
+            const data = new FormData(evt.target)
+            const pass = window.first + 'b' + window.second + '2'
+            
+            if (data.get('password') === pass) {
+                const result = document.getElementById('result-container')
+                const form = document.getElementById('form-container')
+                result.classList.remove('hidden')
+                form.classList.add('hidden')
+            }
+        }
+        window.first = 'dia'
+        initBackground();
+        const form = document.getElementById('form')
+        form.addEventListener('submit', onFormSubmit)
+    </script>
+</body>
+</html>
